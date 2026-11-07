@@ -1,0 +1,777 @@
+/* Tunneler - 1024x768 fixed resolution retro game */
+
+:root {
+    --retro-bg: #1a1a2e;
+    --retro-panel: #16213e;
+    --retro-border: #0f3460;
+    --retro-accent: #e94560;
+    --retro-text: #eee;
+    --retro-text-dim: #888;
+    --retro-green: #00ff41;
+    --retro-amber: #ffb000;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+/* Wrapper to handle scaling */
+#game-wrapper {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #000;
+    overflow: hidden;
+}
+
+/* Main container - fixed 1024x768, scaled to fit viewport */
+#game-container {
+    width: 1024px;
+    height: 768px;
+    background: var(--retro-bg);
+    font-family: 'Press Start 2P', monospace;
+    position: relative;
+    overflow: hidden;
+    border: 4px solid var(--retro-border);
+    transform-origin: center center;
+}
+
+.hidden { display: none !important; }
+
+/* ========== LOBBY ========== */
+#lobby {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding-top: 80px;
+    position: relative;
+}
+
+#lobby-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+}
+
+#lobby-panel {
+    position: relative;
+    z-index: 1;
+    width: 480px;
+    padding: 32px;
+    background: #000;
+    border: 8px solid #e74c3c;
+    box-shadow: 0 0 40px rgba(231, 76, 60, 0.4);
+}
+
+#lobby h2 {
+    color: var(--retro-accent);
+    text-align: center;
+    margin: 0 0 32px 0;
+    font-size: 24px;
+    text-shadow: 3px 3px 0 #000;
+}
+
+#room-link {
+    font-size: 8px;
+    color: var(--retro-text-dim);
+    margin-bottom: 24px;
+    text-align: center;
+    padding: 16px;
+    background: #0a0a15;
+    border: 2px solid var(--retro-border);
+}
+#room-link a {
+    color: var(--retro-green);
+    text-decoration: none;
+}
+#room-link button {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 8px;
+    padding: 8px 16px;
+    margin-left: 16px;
+    background: var(--retro-border);
+    color: var(--retro-text);
+    border: 2px solid var(--retro-text-dim);
+    cursor: pointer;
+}
+#room-link button:hover {
+    background: var(--retro-accent);
+    border-color: var(--retro-accent);
+}
+
+#name-form {
+    margin-bottom: 24px;
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+}
+
+#name-input {
+    padding: 16px;
+    font-size: 8px;
+    width: 200px;
+    height: 48px;
+    font-family: 'Press Start 2P', monospace;
+    background: #0a0a15;
+    border: 3px solid var(--retro-border);
+    color: var(--retro-green);
+    outline: none;
+}
+#name-input:focus {
+    border-color: var(--retro-accent);
+    box-shadow: 0 0 16px rgba(233, 69, 96, 0.5);
+}
+#name-input::placeholder {
+    color: var(--retro-text-dim);
+}
+
+#join-btn, #start-btn {
+    padding: 16px 24px;
+    height: 48px;
+    font-size: 8px;
+    font-family: 'Press Start 2P', monospace;
+    background: var(--retro-accent);
+    color: white;
+    border: none;
+    cursor: pointer;
+    box-shadow: 4px 4px 0 #000;
+}
+#join-btn:hover, #start-btn:hover {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0 #000;
+}
+#join-btn:active, #start-btn:active {
+    transform: translate(4px, 4px);
+    box-shadow: 0 0 0 #000;
+}
+
+#host-buttons {
+    display: flex;
+    gap: 8px;
+    margin-top: 24px;
+}
+#add-bot-btn {
+    padding: 16px 20px;
+    height: 56px;
+    font-size: 8px;
+    font-family: 'Press Start 2P', monospace;
+    background: #9b59b6;
+    color: white;
+    border: none;
+    cursor: pointer;
+    box-shadow: 4px 4px 0 #000;
+}
+#add-bot-btn:hover {
+    background: #8e44ad;
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0 #000;
+}
+#add-bot-btn:disabled {
+    background: #444;
+    cursor: not-allowed;
+    opacity: 0.6;
+    transform: none;
+}
+#settings-btn {
+    padding: 16px 24px;
+    height: 56px;
+    font-size: 8px;
+    font-family: 'Press Start 2P', monospace;
+    background: var(--retro-border);
+    color: white;
+    border: none;
+    cursor: pointer;
+    box-shadow: 4px 4px 0 #000;
+}
+#settings-btn:hover {
+    background: var(--retro-accent);
+}
+#start-btn {
+    background: #2ecc71;
+    flex: 1;
+    height: 56px;
+    font-size: 12px;
+}
+#start-btn:disabled {
+    background: #444;
+    cursor: not-allowed;
+    opacity: 0.6;
+    transform: none;
+    box-shadow: 4px 4px 0 #000;
+}
+
+#waiting-room h3 {
+    color: var(--retro-amber);
+    font-size: 10px;
+    margin: 0 0 16px 0;
+    text-shadow: 1px 1px 0 #000;
+}
+
+#player-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 8px 0;
+}
+#player-list li {
+    padding: 12px 16px;
+    margin: 8px 0;
+    background: #0a0a15;
+    border: 2px solid var(--retro-border);
+    color: var(--retro-green);
+    font-size: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+#player-list li::before {
+    content: ">";
+    color: var(--retro-accent);
+}
+#player-list li.host {
+    border-color: var(--retro-amber);
+    color: var(--retro-amber);
+}
+#player-list li.host::after {
+    content: "[HOST]";
+    color: var(--retro-amber);
+    margin-left: auto;
+    font-size: 8px;
+}
+#player-list li.bot {
+    border-color: #9b59b6;
+    color: #9b59b6;
+}
+#player-list li.bot::after {
+    content: "[BOT]";
+    color: #9b59b6;
+    margin-left: auto;
+    font-size: 8px;
+}
+
+#status {
+    color: var(--retro-text-dim);
+    text-align: center;
+    font-size: 8px;
+    animation: blink 1s infinite;
+}
+@keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0.5; }
+}
+
+/* ========== GAME AREA ========== */
+#game-area {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 8px;
+    gap: 8px;
+}
+
+/* Mini views row - 150px tall (2x scale of 75px view height) */
+#mini-views {
+    display: flex;
+    gap: 8px;
+    height: 150px;
+    justify-content: center;
+}
+
+.mini-view-container {
+    position: relative;
+    width: 224px;
+    height: 150px;
+}
+
+.mini-view {
+    width: 224px;
+    height: 150px;
+    border: 3px solid var(--retro-border);
+    background: #000;
+    display: block;
+}
+
+/* Main canvas - 896x600 (112*8 x 75*8 for exact 8x scale) */
+#main-view-container {
+    position: relative;
+    width: 896px;
+    height: 600px;
+}
+
+#main-canvas {
+    width: 896px;
+    height: 600px;
+    border: 4px solid var(--retro-border);
+    background: #000;
+    display: block;
+}
+
+/* Player stat overlay - positioned inside canvas containers */
+.player-overlay {
+    position: absolute;
+    bottom: 8px;
+    left: 8px;
+    right: 8px;
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    pointer-events: none;
+}
+
+.player-stat {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: rgba(22, 33, 62, 0.9);
+    border: 2px solid var(--retro-border);
+    font-size: 8px;
+    color: var(--retro-text);
+}
+.player-stat.current {
+    border-color: var(--retro-accent);
+}
+.player-stat.dead {
+    opacity: 0.4;
+}
+
+.player-color {
+    width: 12px;
+    height: 12px;
+}
+
+.player-name {
+    min-width: 48px;
+    max-width: 64px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.player-bars {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.player-bar {
+    width: 48px;
+    height: 6px;
+    background: #0a0a15;
+    border: 1px solid var(--retro-border);
+}
+
+.bar-fill {
+    height: 100%;
+    transition: width 0.1s;
+}
+.shield-bar .bar-fill { background: var(--retro-amber); }
+.ammo-bar { position: relative; }
+.ammo-bar .bar-fill { background: #3498db; }
+.ammo-bar .ammo-count {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    font-size: 5px;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-shadow: 1px 1px 0 #000;
+}
+
+.player-kills {
+    font-size: 8px;
+    color: var(--retro-green);
+    min-width: 24px;
+    text-align: right;
+}
+
+/* ========== WINNER OVERLAY ========== */
+#winner-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    z-index: 300;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.winner-panel {
+    width: 480px;
+    background: #000;
+    border: 8px solid var(--retro-amber);
+    box-shadow: 0 0 60px rgba(255, 176, 0, 0.4);
+    padding: 32px;
+    text-align: center;
+}
+
+.winner-panel h2 {
+    color: var(--retro-amber);
+    font-size: 24px;
+    margin: 0 0 24px 0;
+    text-shadow: 3px 3px 0 #000;
+}
+
+.scoreboard {
+    margin-bottom: 24px;
+}
+
+.score-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    margin: 6px 0;
+    background: #0a0a15;
+    border: 2px solid var(--retro-border);
+    font-size: 10px;
+    color: var(--retro-text);
+}
+
+.score-row.winner {
+    border-color: var(--retro-amber);
+    background: rgba(255, 176, 0, 0.1);
+}
+
+.score-color {
+    width: 14px;
+    height: 14px;
+}
+
+.score-name {
+    flex: 1;
+    text-align: left;
+}
+
+.score-kills {
+    color: var(--retro-green);
+}
+
+.new-game-btn {
+    padding: 16px 48px;
+    font-size: 14px;
+    font-family: 'Press Start 2P', monospace;
+    background: #2ecc71;
+    color: white;
+    border: none;
+    cursor: pointer;
+    box-shadow: 4px 4px 0 #000;
+}
+
+.new-game-btn:hover {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0 #000;
+}
+
+.waiting-host {
+    color: var(--retro-text-dim);
+    font-size: 8px;
+    animation: blink 1s infinite;
+}
+
+/* Latency display - top right of main canvas */
+#latency-display {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: rgba(22, 33, 62, 0.9);
+    border: 2px solid var(--retro-border);
+    color: var(--retro-green);
+    padding: 8px 12px;
+    font-size: 10px;
+    z-index: 100;
+}
+#latency-display.stale {
+    color: var(--retro-text-dim);
+}
+
+/* Mini view overlay - simpler, just name */
+.mini-overlay {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    padding: 4px 8px;
+    background: rgba(22, 33, 62, 0.9);
+    border: 2px solid var(--retro-border);
+    font-size: 8px;
+    color: var(--retro-text);
+    pointer-events: none;
+}
+
+/* ========== TOUCH CONTROLS ========== */
+#touch-controls {
+    display: none;
+    position: absolute;
+    bottom: 16px;
+    left: 16px;
+    right: 16px;
+    justify-content: space-between;
+    z-index: 100;
+}
+#touch-controls.active {
+    display: flex;
+}
+
+.touch-dpad {
+    display: grid;
+    grid-template-columns: repeat(3, 48px);
+    grid-template-rows: repeat(3, 48px);
+    gap: 4px;
+}
+
+.touch-btn {
+    width: 48px;
+    height: 48px;
+    background: var(--player-color-light, rgba(128,128,128,0.4));
+    border: 3px solid var(--player-color-dark, rgba(128,128,128,0.6));
+    font-size: 16px;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    box-shadow: 3px 3px 0 rgba(0,0,0,0.5);
+}
+.touch-btn:active, .touch-btn.pressed {
+    background: var(--player-color-pressed, rgba(128,128,128,0.7));
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0 rgba(0,0,0,0.5);
+}
+
+.touch-fire {
+    width: 64px;
+    height: 64px;
+    border-width: 4px;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 8px;
+    align-self: center;
+}
+
+/* ========== FULLSCREEN BUTTON ========== */
+#fullscreen-btn {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    width: 40px;
+    height: 40px;
+    background: rgba(22, 33, 62, 0.9);
+    border: 2px solid var(--retro-border);
+    color: var(--retro-text);
+    font-size: 20px;
+    cursor: pointer;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+#fullscreen-btn:hover {
+    background: var(--retro-accent);
+    border-color: var(--retro-accent);
+}
+
+/* ========== FULLSCREEN MODE ========== */
+#game-container:fullscreen,
+#game-container.pseudo-fullscreen {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #000;
+}
+
+#game-container:fullscreen #game-area,
+#game-container.pseudo-fullscreen #game-area {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Touch hint for mobile in fullscreen */
+#game-container:fullscreen::after,
+#game-container.pseudo-fullscreen::after {
+    content: 'DRAG TO MOVE • TWO FINGERS TO FIRE';
+    position: absolute;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Press Start 2P', monospace;
+    font-size: 10px;
+    color: rgba(255,255,255,0.3);
+    pointer-events: none;
+}
+
+/* Force landscape orientation message */
+@media screen and (orientation: portrait) {
+    #game-container:fullscreen::before,
+    #game-container.pseudo-fullscreen::before {
+        content: 'ROTATE DEVICE FOR BEST EXPERIENCE';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-family: 'Press Start 2P', monospace;
+        font-size: 12px;
+        color: var(--retro-accent);
+        text-align: center;
+        z-index: 1000;
+        background: rgba(0,0,0,0.9);
+        padding: 20px;
+        border: 2px solid var(--retro-accent);
+    }
+}
+
+/* Pseudo-fullscreen for iOS and browsers without Fullscreen API */
+#game-container.pseudo-fullscreen {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    z-index: 9999 !important;
+    margin: 0 !important;
+    border: none !important;
+    transform: none !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #000;
+}
+
+#game-container.pseudo-fullscreen #game-area {
+    transform-origin: center center;
+}
+
+/* Scale game area in pseudo-fullscreen */
+@media screen and (max-width: 1024px), screen and (max-height: 768px) {
+    #game-container.pseudo-fullscreen #game-area {
+        transform: scale(min(calc(100vw / 1024), calc(100vh / 768)));
+    }
+}
+
+/* ========== SETTINGS MODAL ========== */
+#settings-modal {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#settings-panel {
+    width: 900px;
+    max-height: 700px;
+    background: #000;
+    border: 8px solid var(--retro-accent);
+    box-shadow: 0 0 40px rgba(233, 69, 96, 0.4);
+    padding: 24px;
+    overflow-y: auto;
+}
+
+#settings-panel h2 {
+    color: var(--retro-accent);
+    text-align: center;
+    margin: 0 0 24px 0;
+    font-size: 20px;
+    text-shadow: 3px 3px 0 #000;
+}
+
+#settings-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.settings-group {
+    background: #0a0a15;
+    border: 2px solid var(--retro-border);
+    padding: 16px;
+}
+
+.settings-group h3 {
+    color: var(--retro-amber);
+    font-size: 8px;
+    margin: 0 0 12px 0;
+    text-shadow: 1px 1px 0 #000;
+}
+
+.settings-group label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--retro-text);
+    font-size: 8px;
+    margin-bottom: 8px;
+    gap: 8px;
+}
+
+.settings-group input[type="number"] {
+    width: 70px;
+    padding: 8px;
+    font-size: 10px;
+    font-family: 'Press Start 2P', monospace;
+    background: #000;
+    border: 2px solid var(--retro-border);
+    color: var(--retro-green);
+    text-align: right;
+}
+
+.settings-group input[type="number"]:focus {
+    border-color: var(--retro-accent);
+    outline: none;
+}
+
+#settings-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+}
+
+#settings-buttons button {
+    padding: 16px 32px;
+    font-size: 10px;
+    font-family: 'Press Start 2P', monospace;
+    background: var(--retro-border);
+    color: white;
+    border: none;
+    cursor: pointer;
+    box-shadow: 4px 4px 0 #000;
+}
+
+#settings-buttons button:hover {
+    background: var(--retro-accent);
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0 #000;
+}
+
+#settings-buttons button:first-child {
+    background: var(--retro-amber);
+    color: #000;
+}

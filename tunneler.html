@@ -1,0 +1,116 @@
+<script type="text/markdown" id="info">
+name: Tunneler
+description: Classic tank battle game. Dig tunnels, find opponents, and destroy them before they destroy you. Based on the original DOS game but now playable over the web.
+type: games
+github: tunneler
+</script>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ static }}tunneler.css">
+
+<div id="game-container">
+    <!-- LOBBY -->
+    <div id="lobby">
+        <canvas id="lobby-bg"></canvas>
+        <div id="lobby-panel">
+            <h2>TUNNELER</h2>
+            <div id="room-link">
+                ROOM: <a href="?room={{ room }}">{{ room }}</a>
+                <button onclick="copyRoomLink()">COPY</button>
+            </div>
+            <div id="name-form">
+                <input type="text" id="name-input" placeholder="ENTER NAME" maxlength="12">
+                <button id="join-btn" onclick="joinRoom()">JOIN</button>
+            </div>
+            <div id="waiting-room" class="hidden">
+                <h3>PLAYERS:</h3>
+                <ul id="player-list"></ul>
+                <div id="host-buttons" class="hidden">
+                    <button id="add-bot-btn" onclick="addBot()">ADD BOT</button>
+                    <button id="settings-btn" onclick="openSettings()">SETTINGS</button>
+                    <button id="start-btn" onclick="startGame()">START GAME</button>
+                </div>
+                <div id="status">WAITING...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SETTINGS MODAL -->
+    <div id="settings-modal" class="hidden">
+        <div id="settings-panel">
+            <h2>GAME SETTINGS</h2>
+            <div id="settings-grid">
+                <div class="settings-group">
+                    <h3>MOVEMENT</h3>
+                    <label>Tank Speed <input type="number" id="set-tank-speed" min="5" max="100" step="5"></label>
+                    <label>Dig Speed <input type="number" id="set-dig-speed" min="2" max="50" step="2"></label>
+                </div>
+                <div class="settings-group">
+                    <h3>COMBAT</h3>
+                    <label>Bullet Speed <input type="number" id="set-bullet-speed" min="20" max="150" step="10"></label>
+                    <label>Fire Delay (ms) <input type="number" id="set-fire-delay" min="50" max="500" step="25"></label>
+                    <label>Shot Damage % <input type="number" id="set-shot-damage" min="5" max="50" step="1"></label>
+                    <label>Start Ammo <input type="number" id="set-start-ammo" min="10" max="100" step="5"></label>
+                </div>
+                <div class="settings-group">
+                    <h3>GRENADES</h3>
+                    <label>Ammo Cost <input type="number" id="set-grenade-cost-ammo" min="5" max="50" step="5"></label>
+                    <label>Damage % <input type="number" id="set-grenade-damage" min="10" max="100" step="5"></label>
+                    <label>Radius <input type="number" id="set-grenade-radius" min="4" max="16" step="1"></label>
+                </div>
+                <div class="settings-group">
+                    <h3>PICKUPS</h3>
+                    <label>Ammo per Pickup <input type="number" id="set-pickup-ammo" min="5" max="30" step="5"></label>
+                    <label>Pickup Count <input type="number" id="set-pickup-count" min="10" max="100" step="10"></label>
+                </div>
+                <div class="settings-group">
+                    <h3>REPAIR (sec to full)</h3>
+                    <label>Shield Out <input type="number" id="set-repair-shield-out" min="5" max="120" step="5"></label>
+                    <label>Shield In <input type="number" id="set-repair-shield-in" min="2" max="20" step="1"></label>
+                </div>
+                <div class="settings-group">
+                    <h3>OTHER</h3>
+                    <label>Death Time (sec) <input type="number" id="set-death-time" min="1" max="10" step="0.5"></label>
+                </div>
+            </div>
+            <div id="settings-buttons">
+                <button onclick="resetSettings()">RESET DEFAULTS</button>
+                <button onclick="closeSettings()">CLOSE</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- GAME AREA -->
+    <div id="game-area" class="hidden">
+        <div id="mini-views"></div>
+        <div id="main-view-container">
+            <canvas id="main-canvas" width="896" height="600"></canvas>
+            <div id="latency-display">PING: --</div>
+            <div class="player-overlay" id="main-overlay"></div>
+            <button id="fullscreen-btn" onclick="toggleFullscreen()">⛶</button>
+        </div>
+        <div id="touch-controls">
+            <div class="touch-dpad">
+                <div></div>
+                <div class="touch-btn" data-key="up">&#9650;</div>
+                <div></div>
+                <div class="touch-btn" data-key="left">&#9664;</div>
+                <div></div>
+                <div class="touch-btn" data-key="right">&#9654;</div>
+                <div></div>
+                <div class="touch-btn" data-key="down">&#9660;</div>
+                <div></div>
+            </div>
+            <div class="touch-btn touch-fire" data-key="fire">FIRE</div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Room and player ID from Django template (must be defined before loading main.js)
+const room = "{{ room }}";
+const playerId = "{{ player }}";
+</script>
+<script src="{{ static }}game.js"></script>
+<script src="{{ static }}main.js"></script>
